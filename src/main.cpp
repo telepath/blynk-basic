@@ -1,7 +1,6 @@
 #include "blynk.h"
 #include <Arduino.h>
 #include <Wire.h>
-#include <Automaton.h>
 #include "config.h"
 #include <ESP8266WiFi.h>
 #include <BlynkSimpleEsp8266.h>
@@ -16,12 +15,6 @@ void setup() {
   DEBUGLN(F("Setup Serial"));
   #endif
 
-  DEBUGLN(F("Initialize pinParams"));
-  for (size_t i = 0; i < PIN_NUM; i++) {
-    BlynkParam param = BlynkParamAllocated(sizeof(BLYNK_PARAM_PLACEHOLDER_64));
-    pinParams[i] = &param;
-  }
-
   DEBUGLN(F("Start Blynk Provisioning"));
   BlynkProvisioning.begin();
 
@@ -31,25 +24,6 @@ void setup() {
 
 void loop() {
   BlynkProvisioning.run();
-  automaton.run();
-}
-
-void vWrite(int pin, int value) {
-  DEBUG(F("Write "));
-  DEBUG(value);
-  DEBUG(F(" to pin "));
-  DEBUG(pin);
-  DEBUGLN(F(""));
-  Blynk.virtualWrite(pin, value);
-}
-
-void vWrite(int pin, double value) {
-  DEBUG(F("Write "));
-  DEBUG(value);
-  DEBUG(F(" to pin "));
-  DEBUG(pin);
-  DEBUGLN(F(""));
-  Blynk.virtualWrite(pin, value);
 }
 
 void vWrite(int pin, BlynkParam &param) {
@@ -64,12 +38,12 @@ void vWrite(int pin, BlynkParam &param) {
 BLYNK_READ_DEFAULT()
 {
   int pin = request.pin;      // Which pin is handled?
-  int value = 0;
-  // if (pin==tankFullVPin) {
-  //   value = tankFull;
-  // }
-  if (!pinParams[pin]->isEmpty()) {
-    vWrite(pin, (BlynkParam&)pinParams[pin]);
+  if (pinParams[pin].isEmpty()) {
+    DEBUG(F("pinParams["));
+    DEBUG(pin);
+    DEBUGLN(F("] is empty"));
+  } else {
+    vWrite(pin, pinParams[pin]);
   }
 }
 
@@ -79,16 +53,24 @@ BLYNK_WRITE_DEFAULT()
   DEBUG(F("Received "));
   DEBUG(param.asString());
   DEBUG(F(" on pin "));
-  DEBUG(pin);
-  DEBUGLN(F(""));
+  DEBUGLN(pin);
 
-  *pinParams[pin] = BlynkParam(param);
+  pinParams[pin] = param;
+
+  if (pin==LED_COLOR) {
+    // colorLeds();
+  }
 }
 
 void blynk_writeConfig() {
   for (size_t i = 0; i < PIN_NUM; i++) {
-    if (!pinParams[i]->isEmpty()) {
-      vWrite(i, (BlynkParam&)pinParams[i]);
+    // BlynkParam param = *pinParams[i];
+    if (pinParams[i].isEmpty()) {
+      DEBUG(F("pinParams["));
+      DEBUG(i);
+      DEBUGLN(F("] is empty"));
+    } else {
+      vWrite(i, pinParams[i]);
     }
   }
 }

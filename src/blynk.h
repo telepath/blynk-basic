@@ -2,6 +2,17 @@
 #define BLYNK_H
 #include "config.h"
 #include <BlynkSimpleEsp8266.h>
+#include "BlynkParamPlus.h"
+
+#define BOARD_FIRMWARE_VERSION        "1.0.1"
+#define BOARD_HARDWARE_VERSION        "1.0.0"
+
+#define BOARD_NAME                    "Product Name"        // Name of your product. Should match App Export request info.
+#define BOARD_VENDOR                  "Company Name"        // Name of your company. Should match App Export request info.
+#define BOARD_TEMPLATE_ID             "TMPL0000"
+
+#define PRODUCT_WIFI_SSID             "Our Product"         // Name of the device, to be displayed during configuration. Should match export request info.
+#define BOARD_CONFIG_AP_URL           "our-product.cc"      // Config page will be available in a browser at 'http://our-product.cc/'
 
 /* Comment this out to disable prints and save space */
 #ifdef SERIAL_DEBUG
@@ -23,7 +34,7 @@ enum pins {
 };
 
 // Params for each pin are stored here and can be accessed via e.g.:
-// value = pinParams[pin]->asInt();
-BlynkParam *pinParams[PIN_NUM];
+// value = pinParams[pin].asInt();
+BlynkParamPlus pinParams[PIN_NUM];
 
 #endif
