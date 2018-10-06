@@ -35,6 +35,19 @@ void vWrite(int pin, BlynkParam &param) {
   Blynk.virtualWrite(pin, param);
 }
 
+void blynk_writeConfig() {
+  for (size_t i = 0; i < PIN_NUM; i++) {
+    // BlynkParam param = *pinParams[i];
+    if (pinParams[i].isEmpty()) {
+      DEBUG(F("pinParams["));
+      DEBUG(i);
+      DEBUGLN(F("] is empty"));
+    } else {
+      vWrite(i, pinParams[i]);
+    }
+  }
+}
+
 BLYNK_READ_DEFAULT()
 {
   int pin = request.pin;      // Which pin is handled?
@@ -59,19 +72,6 @@ BLYNK_WRITE_DEFAULT()
 
   if (pin==LED_COLOR) {
     // colorLeds();
-  }
-}
-
-void blynk_writeConfig() {
-  for (size_t i = 0; i < PIN_NUM; i++) {
-    // BlynkParam param = *pinParams[i];
-    if (pinParams[i].isEmpty()) {
-      DEBUG(F("pinParams["));
-      DEBUG(i);
-      DEBUGLN(F("] is empty"));
-    } else {
-      vWrite(i, pinParams[i]);
-    }
   }
 }
 
