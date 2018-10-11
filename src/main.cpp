@@ -51,12 +51,17 @@ void blynk_writeConfig() {
 BLYNK_READ_DEFAULT()
 {
   int pin = request.pin;      // Which pin is handled?
-  if (pinParams[pin].isEmpty()) {
-    DEBUG(F("pinParams["));
-    DEBUG(pin);
-    DEBUGLN(F("] is empty"));
+  if (pin<PIN_NUM) {
+    if (pinParams[pin].isEmpty()) {
+      DEBUG(F("pinParams["));
+      DEBUG(pin);
+      DEBUGLN(F("] is empty"));
+    } else {
+      vWrite(pin, pinParams[pin]);
+    }
   } else {
-    vWrite(pin, pinParams[pin]);
+    DEBUG(F("Invalid pin: "));
+    DEBUGLN(pin);
   }
 }
 
@@ -68,10 +73,16 @@ BLYNK_WRITE_DEFAULT()
   DEBUG(F(" on pin "));
   DEBUGLN(pin);
 
-  pinParams[pin] = param;
+  if (pin<PIN_NUM) {
+    pinParams[pin] = param;
+  } else {
+    DEBUG(F("Invalid pin: "));
+    DEBUGLN(pin);
+  }
 
-  if (pin==LED_COLOR) {
-    // colorLeds();
+  switch (pin) {
+    case LED_COLOR:
+    break;
   }
 }
 
